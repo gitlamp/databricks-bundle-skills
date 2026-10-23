@@ -1,0 +1,10 @@
+resources:
+  pipelines:
+    orders_silver:
+      name: orders_silver
+      catalog: ${resources.schemas.silver.catalog_name}
+      schema: ${resources.schemas.silver.name}
+      serverless: true
+      libraries:
+        - file:
+            path: ../src/orders.sql

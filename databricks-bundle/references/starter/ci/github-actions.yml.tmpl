@@ -1,0 +1,46 @@
+# Validates non-production targets on pull requests and deploys production
+# targets on merge to main. Create one GitHub environment per target, each with
+# DATABRICKS_HOST, DATABRICKS_CLIENT_ID and DATABRICKS_CLIENT_SECRET secrets, and
+# add required reviewers to the production environments.
+# The setup-cli action is pinned by tag (v<version>); check that the tag exists
+# in the databricks/setup-cli repository for the version you chose.
+name: bundle
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [{{nonprod_targets}}]
+    environment: ${{ matrix.target }}
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
+      DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: databricks/setup-cli@v{{cli_version}}
+      - run: databricks bundle validate -t ${{ matrix.target }}
+
+  deploy:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [{{prod_targets}}]
+    environment: ${{ matrix.target }}
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
+      DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: databricks/setup-cli@v{{cli_version}}
+      - run: databricks bundle validate -t ${{ matrix.target }}
+      - run: databricks bundle deploy -t ${{ matrix.target }}

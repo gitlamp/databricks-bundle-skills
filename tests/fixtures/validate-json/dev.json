@@ -1,0 +1,4 @@
+{"bundle": {"name": "sales_analytics", "target": "dev"},
+ "resources": {"jobs": {"daily_report": {"name": "[dev user] daily_report"}},
+               "pipelines": {"sales_pipeline": {"name": "[dev user] sales_pipeline"}},
+               "schemas": {"sales_schema": {"name": "sales"}}}}

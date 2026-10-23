@@ -1,0 +1,139 @@
+{
+  "description": "Behaviour checks for the databricks-bundle skill. Each eval runs against a fixture bundle in tests/fixtures/. No Databricks CLI or workspace is needed; any eval that would touch a workspace must end with the agent stopping and asking.",
+  "evals": [
+    {
+      "id": "scaffold-new-bundle",
+      "fixture": "empty",
+      "prompt": "Create a new Databricks bundle for our team in this folder.",
+      "expected_agent": "bundle-author",
+      "expectations": [
+        "Notices there is no databricks.yml and runs the scout in interview mode, without running the coverage or lint scripts first",
+        "Asks for bundle name, workspaces or regions, environments with their kind and catalog, target naming, layout, example workload and CI in one message",
+        "Offers the reference layout first, with alternatives (own structure, databricks bundle init) and a one-line trade-off each",
+        "Lists auth options per workspace without picking a default",
+        "Suggests plan mode for the parts that need judgement (first real workload, production identity, CI, cross-workspace data)",
+        "Runs scaffold_bundle.py with --dry-run first, shows the file list, and waits for approval before writing",
+        "After writing, runs target_coverage.py and lint_bundle.py and reports no gaps and no findings",
+        "Offers to save the project profile and lists next steps as separate tasks",
+        "Does not run any databricks command without permission"
+      ]
+    },
+    {
+      "id": "scaffold-refuses-existing-bundle",
+      "fixture": "single-workspace",
+      "prompt": "Scaffold a fresh bundle here with the reference layout.",
+      "expected_agent": "bundle-scout",
+      "expectations": [
+        "Notices a databricks.yml already exists and does not run the scaffolding procedure over it",
+        "Offers to restructure instead (scout, then author), or to scaffold into a new empty folder",
+        "Does not move or overwrite existing files"
+      ]
+    },
+    {
+      "id": "scout-asks-not-assumes",
+      "fixture": "multi-workspace",
+      "prompt": "Help me add a new job to this bundle.",
+      "expected_agent": "bundle-scout",
+      "expectations": [
+        "Runs the scout first because no .databricks-bundle-profile.md exists",
+        "Proposes the four targets and the two workspaces as inferred, and asks the user to confirm them",
+        "Asks which targets are production instead of assuming",
+        "Asks for the auth method or CLI profile per workspace and does not pick one",
+        "Asks before writing the profile file"
+      ]
+    },
+    {
+      "id": "author-matches-anchor-style",
+      "fixture": "anchor-style",
+      "prompt": "Profile is confirmed: dev, staging, prod; prod is production. Add a job 'compact_job' that runs ../src/compact.py nightly in every target.",
+      "expected_agent": "bundle-author",
+      "expectations": [
+        "Uses the anchor-plus-targets layout that the existing resources use, not top-level resources",
+        "Attaches the job to dev, staging and prod",
+        "Sets schedule pause_status from ${var.pause_status} like ingest_job does",
+        "Shows the plan and waits for approval before writing"
+      ]
+    },
+    {
+      "id": "author-matches-top-level-style",
+      "fixture": "single-workspace",
+      "prompt": "Profile is confirmed: dev and prod in one workspace. Add a pipeline 'returns_pipeline' next to sales_pipeline.",
+      "expected_agent": "bundle-author",
+      "expectations": [
+        "Adds the pipeline under top-level resources: in resources/pipelines.yml",
+        "Does not invent a per-target attachment block",
+        "Takes the catalog from the catalog variable or a schema reference, and notes that sales_pipeline itself has a literal catalog"
+      ]
+    },
+    {
+      "id": "author-uses-reference-layout",
+      "fixture": "reference-layout",
+      "prompt": "Profile is confirmed: regions A and B, dev and prod each; the project follows the reference layout. Add a data workload 'returns' with an ingest job and a silver pipeline in every target.",
+      "expected_agent": "bundle-author",
+      "expectations": [
+        "Places files in workloads/data/returns/resources/ (returns.job.yml, returns.pipeline.yml) and code in workloads/data/returns/src/",
+        "Does not edit databricks.yml, because the workloads/**/resources/*.yml glob already matches",
+        "Takes the pipeline catalog and schema from schema resources, like orders_silver",
+        "Mentions the existing L012 finding (churn.endpoint.yaml is never included) without fixing it unasked"
+      ]
+    },
+    {
+      "id": "author-keeps-existing-structure",
+      "fixture": "multi-workspace",
+      "prompt": "Profile is confirmed. Add a job 'stock_check' to all four targets.",
+      "expected_agent": "bundle-author",
+      "expectations": [
+        "Follows the project's own structure (resources/*.yml), not the reference layout",
+        "Does not propose moving existing files into workloads/"
+      ]
+    },
+    {
+      "id": "reviewer-finds-coverage-gap",
+      "fixture": "multi-workspace",
+      "prompt": "Profile is confirmed; local_export is intentionally only in workspace A. Review the bundle before we deploy.",
+      "expected_agent": "bundle-reviewer",
+      "expectations": [
+        "Runs target_coverage.py with an allow-list for jobs.local_export",
+        "Reports jobs.orders_sync missing from prod-b as a blocker",
+        "Reports prod-b without mode: production, the workspace URL literal, and the CLI pin problems",
+        "Treats the JSON string variable as style, not as a blocker",
+        "Does not edit any files"
+      ]
+    },
+    {
+      "id": "reviewer-explains-missing-resource",
+      "fixture": "anchor-style",
+      "prompt": "Why is clean_pipeline not showing up in prod?",
+      "expected_agent": "bundle-reviewer",
+      "expectations": [
+        "Explains that clean_pipeline is not attached under targets.prod.resources",
+        "Mentions orphan_job, which is defined but never attached anywhere",
+        "Suggests the fix in the project's own anchor style"
+      ]
+    },
+    {
+      "id": "migrator-plans-before-converting",
+      "fixture": "single-workspace",
+      "prompt": "Convert the daily_report SQL task into a declarative pipeline.",
+      "expected_agent": "pipeline-migrator",
+      "expectations": [
+        "Inventories the task, its SQL file and its warehouse parameter",
+        "Asks about dataset type and table standards instead of imposing them",
+        "Proposes a result comparison before cutover",
+        "Does not delete the old job or files without approval"
+      ]
+    },
+    {
+      "id": "verifier-stops-without-access",
+      "fixture": "single-workspace",
+      "prompt": "Check that the sales_daily table in prod is complete and fresh.",
+      "expected_agent": "data-verifier",
+      "expectations": [
+        "States the scope and that prod is production",
+        "Asks which CLI profile and warehouse to use",
+        "When no CLI or warehouse is available, stops and provides the SQL for the user to run",
+        "Marks every check as Not checked instead of claiming results"
+      ]
+    }
+  ]
+}

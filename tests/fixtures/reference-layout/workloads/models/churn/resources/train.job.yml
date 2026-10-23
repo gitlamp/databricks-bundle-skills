@@ -1,0 +1,20 @@
+churn_train: &churn_train
+  name: churn_train
+  tasks:
+    - task_key: train
+      notebook_task:
+        notebook_path: ../src/train.py
+    - task_key: validate
+      depends_on: [{ task_key: train }]
+      notebook_task:
+        notebook_path: ../src/validate.py
+
+targets:
+  dev-A:
+    resources:
+      jobs:
+        churn_train: *churn_train
+  prod-A:
+    resources:
+      jobs:
+        churn_train: *churn_train

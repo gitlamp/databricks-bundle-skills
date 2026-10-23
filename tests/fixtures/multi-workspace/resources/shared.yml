@@ -1,0 +1,21 @@
+resources:
+  pipelines:
+    catalog_pipeline:
+      name: catalog_pipeline
+      catalog: ${var.catalog}
+      schema: products
+      serverless: true
+      configuration:
+        batch_mode: small
+      libraries:
+        - file:
+            path: ../src/products.sql
+  jobs:
+    price_refresh:
+      name: price_refresh
+      tasks:
+        - task_key: refresh
+          notebook_task:
+            notebook_path: ../src/prices.py
+            base_parameters:
+              api_url: https://adb-1234567890123456.7.azuredatabricks.net/api/2.0/prices

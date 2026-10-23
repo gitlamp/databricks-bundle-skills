@@ -1,0 +1,8 @@
+resources:
+  schemas:
+    silver:
+      catalog_name: ${var.catalog}
+      name: silver
+    ml:
+      catalog_name: ${var.catalog}
+      name: ml

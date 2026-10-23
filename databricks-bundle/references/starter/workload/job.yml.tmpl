@@ -1,0 +1,16 @@
+resources:
+  jobs:
+    {{workload}}_job:
+      name: {{workload}}_job
+      tasks:
+        - task_key: ingest
+          notebook_task:
+            notebook_path: ../src/ingest.py
+        - task_key: transform
+          depends_on:
+            - task_key: ingest
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.{{workload}}_pipeline.id}
+      schedule:
+        quartz_cron_expression: "0 0 6 * * ?"
+        timezone_id: UTC

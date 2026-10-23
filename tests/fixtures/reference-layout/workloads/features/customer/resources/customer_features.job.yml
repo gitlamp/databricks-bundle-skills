@@ -1,0 +1,8 @@
+resources:
+  jobs:
+    customer_features:
+      name: customer_features
+      tasks:
+        - task_key: build
+          notebook_task:
+            notebook_path: ../src/build_features.py

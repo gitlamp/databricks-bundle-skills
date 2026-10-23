@@ -1,0 +1,32 @@
+# Planted defects: L008 (cleanup_job schedule unpaused in staging), L009 (wheel in a
+# personal home folder), L011 (cleanup_job notebook ../src/cleanup.py does not exist), coverage gap (pipelines.clean_pipeline missing from prod),
+# unattached definition (orphan_job).
+bundle:
+  name: events_lake
+
+include:
+  - resources/*.yml
+
+variables:
+  catalog:
+    description: Catalog for this target
+  pause_status:
+    description: Schedule state
+    default: PAUSED
+
+targets:
+  dev:
+    mode: development
+    default: true
+    variables:
+      catalog: dev_events
+  staging:
+    variables:
+      catalog: stg_events
+  prod:
+    mode: production
+    workspace:
+      root_path: /Workspace/Shared/.bundle/${bundle.name}/${bundle.target}
+    variables:
+      catalog: events
+      pause_status: UNPAUSED

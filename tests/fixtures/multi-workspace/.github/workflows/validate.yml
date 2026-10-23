@@ -1,0 +1,11 @@
+name: validate
+on: pull_request
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: databricks/setup-cli@main
+        with:
+          version: 0.240.0
+      - run: databricks bundle validate -t dev-a

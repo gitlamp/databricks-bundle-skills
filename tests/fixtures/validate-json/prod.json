@@ -1,0 +1,3 @@
+{"bundle": {"name": "sales_analytics", "target": "prod"},
+ "resources": {"pipelines": {"sales_pipeline": {"name": "sales_pipeline"}},
+               "schemas": {"sales_schema": {"name": "sales"}}}}

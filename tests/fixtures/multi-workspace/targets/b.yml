@@ -1,0 +1,26 @@
+targets:
+  dev-b:
+    mode: development
+    workspace:
+      profile: workspace-b
+    variables:
+      catalog: dev_shop
+    resources:
+      jobs:
+        orders_sync:
+          name: orders_sync
+          tasks:
+            - task_key: sync
+              notebook_task:
+                notebook_path: ../src/orders.py
+  prod-b:
+    workspace:
+      profile: workspace-b
+      root_path: /Workspace/Shared/.bundle/${bundle.name}/${bundle.target}
+    variables:
+      catalog: shop
+    resources:
+      pipelines:
+        catalog_pipeline:
+          configuration:
+            batch_mode: large

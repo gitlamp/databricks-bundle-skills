@@ -1,0 +1,14 @@
+resources:
+  schemas:
+    sales_schema:
+      catalog_name: ${var.catalog}
+      name: sales
+  pipelines:
+    sales_pipeline:
+      name: sales_pipeline
+      catalog: main
+      schema: ${resources.schemas.sales_schema.name}
+      serverless: true
+      libraries:
+        - file:
+            path: ../src/sales.sql

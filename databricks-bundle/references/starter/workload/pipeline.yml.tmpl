@@ -1,0 +1,10 @@
+resources:
+  pipelines:
+    {{workload}}_pipeline:
+      name: {{workload}}_pipeline
+      catalog: ${resources.schemas.{{workload}}.catalog_name}
+      schema: ${resources.schemas.{{workload}}.name}
+      serverless: true
+      libraries:
+        - file:
+            path: ../src/transform.sql

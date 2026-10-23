@@ -1,0 +1,37 @@
+# Interview answers for scripts/scaffold_bundle.py. The scout fills this in from
+# the user's answers; nothing here is a recommendation.
+bundle_name: my_bundle
+
+# Target names are built from this pattern. Use {env} alone for one workspace.
+target_pattern: "{env}-{region}"
+
+# One entry per workspace or region. `profile` (a CLI profile name) or `host`
+# is optional; leave both out when CI or the environment supplies the host.
+regions:
+  - name: A
+    profile: workspace-a
+  - name: B
+    profile: workspace-b
+
+# kind: development (mode: development), test (schedules paused), or production.
+environments:
+  - name: dev
+    kind: development
+    catalog: dev_main
+  - name: prod
+    kind: production
+    catalog: main
+
+# Optional per-region catalog overrides: {region: {env: catalog}}
+catalog_overrides: {}
+
+# A small example workload (job + pipeline + schema) to copy from. Set to null to skip.
+example_workload: example
+
+# CI: none or github-actions. cli_version is required for CI (pin the version you use).
+ci: none
+cli_version: null
+
+# Not rendered: recorded in the project profile so later work can plan for it.
+# none, later, or a short description of how data is shared across workspaces.
+cross_workspace_data: none

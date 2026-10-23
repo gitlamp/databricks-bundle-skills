@@ -1,0 +1,31 @@
+# Planted defects: L001 (literal UUID in run_as), L003 (literal pipeline catalog),
+# L005 (prod root_path under the deploying user), L006 (warehouse_id missing in prod).
+bundle:
+  name: sales_analytics
+
+include:
+  - resources/*.yml
+
+variables:
+  catalog:
+    description: Catalog this target writes to
+  warehouse_id:
+    description: SQL warehouse used by report tasks
+  runner_name:
+    description: Principal that runs the jobs
+
+targets:
+  dev:
+    mode: development
+    default: true
+    variables:
+      catalog: dev_sales
+      warehouse_id: dev-warehouse-placeholder
+      runner_name: ${workspace.current_user.userName}
+  prod:
+    mode: production
+    workspace:
+      root_path: /Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}
+    variables:
+      catalog: sales
+      runner_name: sales-runner

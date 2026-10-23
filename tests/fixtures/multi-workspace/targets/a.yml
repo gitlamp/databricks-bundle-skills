@@ -1,0 +1,44 @@
+targets:
+  dev-a:
+    mode: development
+    default: true
+    workspace:
+      profile: workspace-a
+    variables:
+      catalog: dev_shop
+      region_settings: '{"currency": "EUR", "batch_size": 500}'
+    resources:
+      jobs:
+        local_export:
+          name: local_export
+          tasks:
+            - task_key: export
+              notebook_task:
+                notebook_path: ../src/export.py
+        orders_sync:
+          name: orders_sync
+          tasks:
+            - task_key: sync
+              notebook_task:
+                notebook_path: ../src/orders.py
+  prod-a:
+    mode: production
+    workspace:
+      profile: workspace-a
+      root_path: /Workspace/Shared/.bundle/${bundle.name}/${bundle.target}
+    variables:
+      catalog: shop
+    resources:
+      jobs:
+        local_export:
+          name: local_export
+          tasks:
+            - task_key: export
+              notebook_task:
+                notebook_path: ../src/export.py
+        orders_sync:
+          name: orders_sync
+          tasks:
+            - task_key: sync
+              notebook_task:
+                notebook_path: ../src/orders.py

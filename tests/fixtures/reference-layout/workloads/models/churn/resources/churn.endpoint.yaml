@@ -1,0 +1,10 @@
+resources:
+  model_serving_endpoints:
+    churn_endpoint:
+      name: churn-endpoint
+      config:
+        served_entities:
+          - entity_name: ${resources.registered_models.churn_model.name}
+            entity_version: "1"
+            workload_size: Small
+            scale_to_zero_enabled: true

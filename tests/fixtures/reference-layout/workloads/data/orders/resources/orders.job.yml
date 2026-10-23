@@ -1,0 +1,12 @@
+resources:
+  jobs:
+    orders_ingest:
+      name: orders_ingest
+      tasks:
+        - task_key: ingest
+          notebook_task:
+            notebook_path: ../src/ingest.py
+        - task_key: transform
+          depends_on: [{ task_key: ingest }]
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.orders_silver.id}

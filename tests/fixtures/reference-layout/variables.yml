@@ -1,0 +1,5 @@
+variables:
+  catalog:
+    description: Catalog this target writes to
+  alert_destination:
+    description: Notification destination for failures

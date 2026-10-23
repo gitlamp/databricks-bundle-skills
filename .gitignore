@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+.pytest_cache/
+*.zip
+# Private source notes, not part of the public repo
+background-context-for-skills/

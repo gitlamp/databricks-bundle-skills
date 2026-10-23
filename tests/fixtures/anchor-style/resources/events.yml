@@ -1,0 +1,59 @@
+ingest_job: &ingest_job
+  name: ingest_job
+  tasks:
+    - task_key: ingest
+      notebook_task:
+        notebook_path: ../src/ingest.py
+      libraries:
+        - whl: /Workspace/Users/deployer@example.com/libs/common-0.1.0-py3-none-any.whl
+  schedule:
+    quartz_cron_expression: "0 30 2 * * ?"
+    timezone_id: UTC
+    pause_status: ${var.pause_status}
+
+cleanup_job: &cleanup_job
+  name: cleanup_job
+  tasks:
+    - task_key: cleanup
+      notebook_task:
+        notebook_path: ../src/cleanup.py
+  schedule:
+    quartz_cron_expression: "0 0 3 * * ?"
+    timezone_id: UTC
+
+clean_pipeline: &clean_pipeline
+  name: clean_pipeline
+  catalog: ${var.catalog}
+  schema: events
+  serverless: true
+  libraries:
+    - file:
+        path: ../src/clean.sql
+
+orphan_job: &orphan_job
+  name: orphan_job
+  tasks:
+    - task_key: noop
+      notebook_task:
+        notebook_path: ../src/noop.py
+
+targets:
+  dev:
+    resources:
+      jobs:
+        ingest_job: *ingest_job
+        cleanup_job: *cleanup_job
+      pipelines:
+        clean_pipeline: *clean_pipeline
+  staging:
+    resources:
+      jobs:
+        ingest_job: *ingest_job
+        cleanup_job: *cleanup_job
+      pipelines:
+        clean_pipeline: *clean_pipeline
+  prod:
+    resources:
+      jobs:
+        ingest_job: *ingest_job
+        cleanup_job: *cleanup_job

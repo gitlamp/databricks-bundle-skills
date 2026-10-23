@@ -1,0 +1,17 @@
+# Planted defects: L002 (workspace URL literal), L004 (prod-b not production mode),
+# L007 (JSON string variable), L010 x2 (unpinned CLI + inconsistent pins),
+# coverage gap (jobs.orders_sync missing from prod-b).
+# Intended gap (allowed via allow.yml): jobs.local_export exists only in workspace A.
+bundle:
+  name: shop_platform
+
+include:
+  - targets/*.yml
+  - resources/*.yml
+
+variables:
+  catalog:
+    description: Catalog for this target
+  region_settings:
+    description: Per-workspace settings
+    default: none

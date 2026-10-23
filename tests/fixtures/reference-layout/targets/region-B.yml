@@ -1,0 +1,16 @@
+targets:
+  dev-B:
+    mode: development
+    workspace:
+      profile: workspace-b
+    variables:
+      catalog: dev_retail
+      alert_destination: none
+  prod-B:
+    mode: production
+    workspace:
+      profile: workspace-b
+      root_path: /Workspace/Shared/.bundle/${bundle.name}/${bundle.target}
+    variables:
+      catalog: retail
+      alert_destination: ops-alerts-b

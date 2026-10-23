@@ -1,0 +1,15 @@
+resources:
+  jobs:
+    daily_report:
+      name: daily_report
+      run_as:
+        service_principal_name: 6f1c2a9e-3b7d-4e2a-9c1f-0a8b7d6e5f43
+      tasks:
+        - task_key: refresh
+          sql_task:
+            warehouse_id: ${var.warehouse_id}
+            file:
+              path: ../src/report.sql
+      schedule:
+        quartz_cron_expression: "0 0 6 * * ?"
+        timezone_id: UTC

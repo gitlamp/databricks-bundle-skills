@@ -1,0 +1,14 @@
+churn_model: &churn_model
+  name: churn
+  catalog_name: ${resources.schemas.ml.catalog_name}
+  schema_name: ${resources.schemas.ml.name}
+
+targets:
+  dev-A:
+    resources:
+      registered_models:
+        churn_model: *churn_model
+  prod-A:
+    resources:
+      registered_models:
+        churn_model: *churn_model
