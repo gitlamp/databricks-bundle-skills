@@ -2,5 +2,9 @@
 __pycache__/
 .pytest_cache/
 *.zip
+# OS and editor files
+.DS_Store
+.idea/
+.vscode/
 # Private source notes, not part of the public repo
 background-context-for-skills/
